@@ -1,25 +1,18 @@
-import React, { useContext } from 'react';
-import { Context } from 'context/contactContext';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { filterChanges } from 'redux/filterSlice';
 
 const Filter = () => {
-  const { filter, setFilter } = useContext(Context);
+  const dispatch = useDispatch();
+  const { searchQuery } = useSelector(state => state.filter);
 
-  const filteredContacts = ({ target }) => {
-    setFilter(target.value);
+  const onChangeFilterValue = e => {
+    dispatch(filterChanges(e.target.value));
   };
-
   return (
-    <label>
-      Find contacts by name:
-      <br />
-      <input
-        type="text"
-        placeholder="Find..."
-        value={filter}
-        onChange={filteredContacts}
-      />
-    </label>
+    <div>
+      <input onChange={onChangeFilterValue} value={searchQuery}></input>
+    </div>
   );
 };
-
 export default Filter;

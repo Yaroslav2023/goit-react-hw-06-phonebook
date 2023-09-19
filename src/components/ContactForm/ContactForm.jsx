@@ -1,36 +1,34 @@
-import React, { useContext } from 'react';
+import React, { useState } from 'react';
 import cl from './contactForm.module.css';
+import { useDispatch } from 'react-redux';
+import { addContact } from 'redux/contactSlice';
 import { nanoid } from 'nanoid';
-import { Context } from '../../context/contactContext';
 
 const ContactForm = () => {
-  const { name, setName, number, setNumber, contacts, setContacts } =
-    useContext(Context);
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
+  const dispatch = useDispatch();
 
   const handleSubmitForm = e => {
     e.preventDefault();
-    const newContact = {
-      id: nanoid(),
-      name,
-      number,
-    };
-    const isDuplicateName = contacts.some(
-      contact => contact.name.toLowerCase() === name.toLowerCase()
-    );
-
-    if (isDuplicateName) {
-      alert(`${name} is already in contacts.`);
-      return;
-    }
-
-    setContacts([...contacts, newContact]);
-
-    reset();
-  };
-
-  const reset = () => {
+    const name = e.target.name.value;
+    const number = e.target.number.value;
+    dispatch(addContact({ id: nanoid(), name, number }));
     setName('');
     setNumber('');
+  };
+
+  const handleChangeInput = ({ target }) => {
+    const { name, value } = target;
+
+    switch (name) {
+      case 'name':
+        setName(value);
+        break;
+      case 'number':
+        setNumber(value);
+        break;
+    }
   };
 
   return (
@@ -41,10 +39,7 @@ const ContactForm = () => {
           type="text"
           name="name"
           value={name}
-          onChange={e => {
-            setName(e.currentTarget.value);
-          }}
-          id={nanoid()}
+          onChange={handleChangeInput}
           pattern="^[a-zA-Zа-яА-ЯІіЇїҐґ' \-\u0400-\u04FF]+$"
           title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
           required
@@ -57,9 +52,7 @@ const ContactForm = () => {
           type="tel"
           name="number"
           value={number}
-          onChange={e => {
-            setNumber(e.currentTarget.value);
-          }}
+          onChange={handleChangeInput}
           pattern="^[+]?[0-9\\.\\-\\s]{1,15}$"
           title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
           placeholder="123-45-67"
