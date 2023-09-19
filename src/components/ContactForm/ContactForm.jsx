@@ -28,6 +28,8 @@ const ContactForm = () => {
       case 'number':
         setNumber(value);
         break;
+      default:
+        return;
     }
   };
 
